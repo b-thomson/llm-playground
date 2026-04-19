@@ -12,6 +12,9 @@ wheels/
 # Environment and secrets
 .env
 
+# Project data
+chat.db
+
 # OS and editor
 .DS_Store
 .vscode/

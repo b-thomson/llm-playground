@@ -7,6 +7,9 @@ A monorepo of small, self-contained AI experiments.
 ### [memory-chat](projects/memory-chat/)
 A minimal Streamlit chat app with provider/model selection and configurable conversation memory. Supports OpenAI, Anthropic, and Google out of the box.
 
+### [memory-chat-persistent](projects/memory-chat-persistent/)
+Extends memory-chat with SQLite-backed session persistence. Chat history survives app restarts. Multiple named sessions supported.
+
 ## Setup
 
 1. Clone the repo

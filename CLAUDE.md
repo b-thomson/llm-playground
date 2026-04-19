@@ -9,7 +9,8 @@ llm-playground/
 ├── .gitignore
 ├── CLAUDE.md
 └── projects/
-    └── memory-chat/      # Streamlit chat app with provider/model/memory selection
+    ├── memory-chat/             # Streamlit chat app with provider/model/memory selection
+    └── memory-chat-persistent/  # Extends memory-chat with SQLite session persistence
 ```
 
 ## Conventions

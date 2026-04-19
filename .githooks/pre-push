@@ -1,0 +1,5 @@
+#!/bin/sh
+echo ""
+echo "Pre-push check: is TECH_SPEC.md up to date with the current code?"
+echo "Review it now if anything has changed since it was last updated."
+echo ""
