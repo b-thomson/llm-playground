@@ -18,9 +18,9 @@ llm-playground/
 - Write a PRD and TECH_SPEC before building
 
 ## New Project Setup (overrides user defaults)
-- Run `uv init` inside `projects/<name>/`, not the repo root
-- Use the root `.gitignore` — delete any per-project one that `uv init` creates
-- Shared `.env` lives at repo root, not inside the project folder
+- This is a monorepo — follow the monorepo layout from user CLAUDE.md
+- `uv init --no-vcs` inside `projects/<name>/`, not the repo root
+- Shared `.env` lives at repo root — load with `dotenv.load_dotenv("../../.env")` from the project folder
 
 ## Running a project
 ```bash
