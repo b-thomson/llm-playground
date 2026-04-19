@@ -8,35 +8,25 @@ load_dotenv(Path(__file__).parent / "../../.env")
 
 PROVIDERS = {
     "OpenAI": {
-        "default": "gpt-4o-mini",
         "premium": "gpt-4o",
+        "default": "gpt-4o-mini",
         "lite": "gpt-3.5-turbo",
     },
     "Anthropic": {
-        "default": "claude-sonnet-4-6",
         "premium": "claude-opus-4-7",
+        "default": "claude-sonnet-4-6",
         "lite": "claude-haiku-4-5-20251001",
     },
     "Google": {
-        "default": "gemini-2.5-flash",
         "premium": "gemini-2.5-pro",
+        "default": "gemini-2.5-flash",
         "lite": "gemini-2.0-flash-lite",
     },
-}
-
-TIER_LABELS = {
-    "default": "Default (best value)",
-    "premium": "Premium",
-    "lite": "Lite (fastest/cheapest)",
 }
 
 
 def model_options(provider: str) -> list[str]:
     return list(PROVIDERS[provider].values())
-
-
-def model_labels(provider: str) -> list[str]:
-    return [f"{TIER_LABELS[t]} — {m}" for t, m in PROVIDERS[provider].items()]
 
 
 def get_response(messages: list[dict], provider: str, model: str) -> str:
@@ -97,12 +87,7 @@ def on_provider_change():
 
 
 def on_model_change():
-    provider = st.session_state.provider
-    selected_label = st.session_state["model_select"]
-    labels = model_labels(provider)
-    models = model_options(provider)
-    idx = labels.index(selected_label)
-    st.session_state.model = models[idx]
+    st.session_state.model = st.session_state["model_select"]
 
 
 # --- Layout ---
@@ -121,14 +106,11 @@ with col1:
     )
 
 with col2:
-    provider = st.session_state.provider
-    labels = model_labels(provider)
-    models = model_options(provider)
-    current_model = st.session_state.model
-    current_idx = models.index(current_model) if current_model in models else 0
+    models = model_options(st.session_state.provider)
+    current_idx = models.index(st.session_state.model) if st.session_state.model in models else 1
     st.selectbox(
         "Model",
-        options=labels,
+        options=models,
         index=current_idx,
         key="model_select",
         on_change=on_model_change,
