@@ -1,0 +1,16 @@
+[project]
+name = "memory-chat-tools"
+version = "0.1.0"
+description = "Anthropic tool-use chat app with web search and SQLite session persistence"
+requires-python = ">=3.12"
+dependencies = [
+    "anthropic>=0.97.0",
+    "python-dotenv>=1.2.2",
+    "streamlit>=1.56.0",
+    "tavily-python>=0.7.23",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.3",
+]

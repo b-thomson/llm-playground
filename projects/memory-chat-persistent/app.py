@@ -193,9 +193,9 @@ with col_new:
         st.session_state["_creating_session"] = True
 
 if st.session_state.get("_creating_session"):
-    new_name = st.text_input("Session name", key="new_session_name")
-    if st.button("Create"):
-        if new_name.strip():
+    with st.form("new_session_form", clear_on_submit=True):
+        new_name = st.text_input("Session name")
+        if st.form_submit_button("Create") and new_name.strip():
             sid = create_session(new_name.strip())
             st.session_state.session_id = sid
             st.session_state.session_name = new_name.strip()

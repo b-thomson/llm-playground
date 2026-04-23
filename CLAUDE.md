@@ -10,17 +10,20 @@ llm-playground/
 ├── CLAUDE.md
 └── projects/
     ├── memory-chat/             # Streamlit chat app with provider/model/memory selection
-    └── memory-chat-persistent/  # Extends memory-chat with SQLite session persistence
+    ├── memory-chat-persistent/  # Extends memory-chat with SQLite session persistence
+    ├── memory-chat-tools/       # Adds Anthropic tool use (web search via Tavily), agentic loop
+    └── context-inspector/       # PRD stub — inspection layer for tool use messages
 ```
 
 ## Conventions
 - Each project in `projects/<name>/` is independently runnable
 - All projects share the root `.env` — load with `dotenv.load_dotenv("../../.env")` from project root
 - Write a PRD and TECH_SPEC before building
+- No per-project README — CLAUDE.md covers internal docs, root README covers the portfolio view
 
 ## New Project Setup (overrides user defaults)
 - This is a monorepo — follow the monorepo layout from user CLAUDE.md
-- `uv init --no-vcs` inside `projects/<name>/`, not the repo root
+- `uv init --vcs none` inside `projects/<name>/`, not the repo root (flag changed: `--vcs none` not `--no-vcs`)
 - Shared `.env` lives at repo root — load with `dotenv.load_dotenv("../../.env")` from the project folder
 
 ## Running a project
