@@ -14,7 +14,7 @@ Extends memory-chat with SQLite-backed session persistence. Chat history survive
 Adds Anthropic tool use to the persistent app. The model can call a web search tool (Tavily) mid-conversation, loop until it has enough information, and incorporate live results into its response.
 
 ### [context-inspector](projects/context-inspector/)
-Extends memory-chat-tools with a live inspector sidebar. Chat normally on the left; on the right, every turn exposes its raw message JSON, direction badges, and a running prior-context count so context window accumulation is visible.
+Extends memory-chat-tools with a live inspector sidebar. Chat in the main area with an inspector sidebar. Every turn exposes its raw message JSON, direction badges, and a running prior-context count so context window accumulation is visible.
 
 ## Setup
 
