@@ -33,6 +33,8 @@ TOOLS = [
     }
 ]
 
+st.set_page_config(layout="wide", page_title="context-inspector")
+
 
 # --- DB ---
 
@@ -97,35 +99,16 @@ def execute_tool(name: str, tool_input: dict) -> str:
     raise ValueError(f"Unknown tool: {name}")
 
 
-# --- Logging ---
-
-def _log(label: str, call: int, data: dict):
-    sep = "═" * 60
-    print(f"\n{sep}")
-    print(f"  {label} #{call}")
-    print(sep)
-    print(json.dumps(data, indent=2, default=str))
-
-
 # --- Agent loop ---
 
 def run_agent(messages: list[dict], model: str) -> tuple[str, list[dict]]:
-    """Run the agentic loop. Returns (final_text, intermediate_messages).
-
-    intermediate_messages are the assistant tool_use + user tool_result pairs
-    added during the loop — ready to persist and replay.
-    """
     from anthropic import Anthropic
     client = Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
 
     working = list(messages)
     intermediates = []
-    call = 0
 
     while True:
-        call += 1
-        _log("REQUEST", call, {"model": model, "max_tokens": 4096, "tools": TOOLS, "messages": working})
-
         resp = client.messages.create(
             model=model,
             max_tokens=4096,
@@ -133,8 +116,6 @@ def run_agent(messages: list[dict], model: str) -> tuple[str, list[dict]]:
             messages=working,
             cache_control={"type": "ephemeral"},
         )
-
-        _log("RESPONSE", call, resp.model_dump())
 
         if resp.stop_reason == "end_turn":
             text = next((b.text for b in resp.content if b.type == "text"), "")
@@ -172,17 +153,43 @@ def run_agent(messages: list[dict], model: str) -> tuple[str, list[dict]]:
             intermediates.append(user_msg)
 
 
-# --- UI helpers ---
+# --- Inspector helpers ---
 
-def render_message(msg: dict):
+def group_into_turns(messages: list[dict]) -> list[list[dict]]:
+    turns: list[list[dict]] = []
+    current: list[dict] = []
+    for msg in messages:
+        is_user_text = msg["role"] == "user" and isinstance(msg["content"], str)
+        if is_user_text and current:
+            turns.append(current)
+            current = []
+        current.append(msg)
+    if current:
+        turns.append(current)
+    return turns
+
+
+def turn_label(i: int, turn: list[dict]) -> str:
+    text = turn[0]["content"]
+    preview = text[:55].rstrip() + ("…" if len(text) > 55 else "")
+    return f"Turn {i} — {preview}"
+
+
+def role_badge(msg: dict) -> str:
+    if msg["role"] == "user":
+        return "user → assistant"
+    return "assistant → user"
+
+
+# --- Chat render ---
+
+def render_chat_message(msg: dict):
     role = msg["role"]
     content = msg["content"]
-
     if isinstance(content, str):
         with st.chat_message(role):
             st.markdown(content)
         return
-
     for block in content:
         if block.get("type") == "text" and block.get("text"):
             with st.chat_message(role):
@@ -190,12 +197,16 @@ def render_message(msg: dict):
         elif block.get("type") == "tool_use":
             with st.chat_message("assistant"):
                 st.info(f"Searched: *{block['input'].get('query', '')}*")
-        # tool_result blocks: hidden from UI
 
 
 # --- Startup ---
 
 init_db()
+
+st.markdown(
+    "<style>div[data-testid='stCodeBlock'] pre { white-space: pre-wrap !important; overflow-x: unset !important; }</style>",
+    unsafe_allow_html=True,
+)
 
 for key, default in [
     ("messages", []),
@@ -225,7 +236,7 @@ def on_session_change():
 
 # --- Layout ---
 
-st.title("memory-chat-tools")
+st.title("context-inspector")
 
 sessions = get_sessions()
 session_names = [name for _, name in sessions]
@@ -278,8 +289,9 @@ with col_model:
 
 st.divider()
 
+# Chat
 for msg in st.session_state.messages:
-    render_message(msg)
+    render_chat_message(msg)
 
 if st.session_state.session_id and (prompt := st.chat_input("Ask anything...")):
     user_msg = {"role": "user", "content": prompt}
@@ -300,7 +312,7 @@ if st.session_state.session_id and (prompt := st.chat_input("Ask anything...")):
             intermediates = []
 
     for msg in intermediates:
-        render_message(msg)
+        render_chat_message(msg)
         save_message(st.session_state.session_id, msg["role"], msg["content"])
         st.session_state.messages.append(msg)
 
@@ -312,3 +324,24 @@ if st.session_state.session_id and (prompt := st.chat_input("Ask anything...")):
 
 elif not st.session_state.session_id:
     st.chat_input("Create a session first...", disabled=True)
+
+# Inspector sidebar — runs after chat processing so messages are up to date
+turns = group_into_turns(st.session_state.messages)
+with st.sidebar:
+    st.header("Inspector")
+    if turns:
+        st.caption(f"{len(turns)} turn{'s' if len(turns) != 1 else ''} · {len(st.session_state.messages)} message{'s' if len(st.session_state.messages) != 1 else ''}")
+        st.divider()
+        cumulative = []
+        for i, turn in enumerate(turns, 1):
+            with st.expander(turn_label(i, turn), expanded=False):
+                if cumulative:
+                    st.caption(f"↑ {len(cumulative)} prior message{'s' if len(cumulative) != 1 else ''} in context")
+                    st.divider()
+                for msg in turn:
+                    st.markdown(f"**`{role_badge(msg)}`**")
+                    st.code(json.dumps(msg["content"], indent=2, ensure_ascii=False), language="json")
+                    st.write("")
+            cumulative.extend(turn)
+    else:
+        st.caption("No turns yet.")

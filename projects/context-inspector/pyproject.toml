@@ -1,0 +1,11 @@
+[project]
+name = "context-inspector"
+version = "0.1.0"
+description = "Anthropic tool-use chat with a live inspector sidebar exposing raw message structure per turn"
+requires-python = ">=3.12"
+dependencies = [
+    "anthropic>=0.97.0",
+    "python-dotenv>=1.2.2",
+    "streamlit>=1.56.0",
+    "tavily-python>=0.7.23",
+]

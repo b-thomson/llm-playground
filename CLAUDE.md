@@ -12,7 +12,7 @@ llm-playground/
     ├── memory-chat/             # Streamlit chat app with provider/model/memory selection
     ├── memory-chat-persistent/  # Extends memory-chat with SQLite session persistence
     ├── memory-chat-tools/       # Adds Anthropic tool use (web search via Tavily), agentic loop
-    └── context-inspector/       # PRD stub — inspection layer for tool use messages
+    └── context-inspector/       # Read-only inspector for memory-chat-tools sessions (sidebar JSON view)
 ```
 
 ## Conventions

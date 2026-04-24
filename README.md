@@ -13,6 +13,9 @@ Extends memory-chat with SQLite-backed session persistence. Chat history survive
 ### [memory-chat-tools](projects/memory-chat-tools/)
 Adds Anthropic tool use to the persistent app. The model can call a web search tool (Tavily) mid-conversation, loop until it has enough information, and incorporate live results into its response.
 
+### [context-inspector](projects/context-inspector/)
+Read-only inspection layer for memory-chat-tools sessions. Sidebar exposes the full raw message structure per turn — roles, content blocks, tool use/result pairs — as expandable JSON.
+
 ## Setup
 
 1. Clone the repo
