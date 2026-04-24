@@ -30,5 +30,6 @@ llm-playground/
 └── projects/
     ├── memory-chat/
     ├── memory-chat-persistent/
-    └── memory-chat-tools/
+    ├── memory-chat-tools/
+    └── context-inspector/
 ```

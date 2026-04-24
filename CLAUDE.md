@@ -26,6 +26,10 @@ llm-playground/
 - `uv init --vcs none` inside `projects/<name>/`, not the repo root (flag changed: `--vcs none` not `--no-vcs`)
 - Shared `.env` lives at repo root — load with `dotenv.load_dotenv("../../.env")` from the project folder
 
+## Before pushing
+- Always check README.md is up to date — project list and the Structure tree must reflect the current state of `projects/`
+- Update both if any projects have been added, removed, or significantly changed
+
 ## Running a project
 ```bash
 cd projects/<name>
